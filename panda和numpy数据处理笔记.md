@@ -194,6 +194,19 @@ def fix_century(x):
 data['Yr_Mo_Dy'] = data['Yr_Mo_Dy'].apply(fix_century)
 ```
 
+#### 数据映射为标签
+
+```python
+# 列名:label, pd.DataFrame
+status_replace = {
+    "label" : {
+        "One" : 1,
+        "Zero" : 0,
+    }
+}
+data = data.replace(status_replace)
+```
+
 
 
 #### 将某列转换为浮点数
