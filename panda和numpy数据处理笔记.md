@@ -2,7 +2,7 @@
 
 ### 数据基本属性操作
 
-#### 修改列名或索引名`rename`
+#### 修改列名或索引名`rename`  删除`del`
 
 ```python
 # 修改列名
@@ -15,8 +15,13 @@ data.rename(index={0:'row'},columns={0:'id', 2:'labels'}, inplace=True)
 
 # 设置某列(Year)为索引
 data = data.set_index('Year', drop = True)
+# 重新设置索引
+data = data.reset_index(drop = True)
 # 删除某列(Year)
 del data['Year']
+
+# 查看是否有重复索引(index)
+data.index.is_unique
 ```
 
 #### 查看数据行和列
@@ -29,6 +34,24 @@ data.shape[0]
 # 打印全部的列名称
 data.columns
 ```
+
+#### 计算行和列的`min max std mean`
+
+```python
+# 计算行的统计信息
+data['min'] = data.min(axis=1)
+data['max'] = data.max(axis=1)
+data['mean'] = data.mean(axis=1)
+data['std'] = data.std(axis=1)
+# 计算列的统计信息
+data['min'] = data.min()
+data['min'] = data.min(axis=0)
+data['max'] = data.max(axis=0)
+data['mean'] = data.mean(axis=0)
+data['std'] = data.std(axis=0)
+```
+
+
 
 #### 选取数据`iloc`和`loc`
 
@@ -65,6 +88,32 @@ data.item.nunique()
 # 一共有多少订单
 data.item.value_counts().count()
 ```
+
+#### 缺省值处理
+
+```python
+# 一共有多少缺省值
+data.isnull.sum()
+# 一共有多少完整的数据值
+data.shape[1] - data.isnull().sum()
+
+# 数据框中是否有缺省值, 按列查看
+pd.isnull(data).sum()
+
+# 将缺省值全部置换成1.0
+data.fillna(1, inplace=True)
+# 某一列置换, 列名：colu
+data.colu.fillna(1, inplace=True)
+
+# 删除有缺省值的行
+data = data.dropna(how='any')
+# 删除某一行全为 NaN 的数据
+data = data.dropna(how='all')
+# 传入 axis = 1 即为对列操作
+data.dropna(axis=1,how="all")
+```
+
+
 
 #### 按照先`Red Cards`再`Yellow Cards`进行排序
 
@@ -133,6 +182,16 @@ pd.merge(data1, data2, on='id')
 # how = 'right':根据data2的id合并
 # how = 'outer':data1 和 data2 合并之后的所有匹配结果
 pd.merge(data1, data2, on='id', how='inner')
+```
+
+#### `apply` 处理时间
+
+```python
+def fix_century(x):
+    year = x.year - 100 if x.year>1989 else x.year
+    return date.time.data(year, x.month, x.day)
+# 应用函数处理
+data['Yr_Mo_Dy'] = data['Yr_Mo_Dy'].apply(fix_century)
 ```
 
 
